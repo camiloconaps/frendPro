@@ -1,0 +1,79 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-title>FrendPro</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="inicio-content">
+
+  <!-- Tarjeta de perfil -->
+  <div class="perfil-card" *ngIf="medico">
+    <div class="perfil-avatar-wrap">
+      <img *ngIf="medico.fotoUrl" [src]="medico.fotoUrl" class="avatar-img" alt="foto" />
+      <div *ngIf="!medico.fotoUrl" class="avatar-iniciales">{{iniciales()}}</div>
+    </div>
+    <div class="perfil-info">
+      <h2>{{medico.nombre}}</h2>
+      <p class="especialidad">{{medico.especialidad}}</p>
+      <p class="ciudad">
+        <ion-icon name="location-outline"></ion-icon>
+        {{medico.ciudad}}
+      </p>
+    </div>
+  </div>
+
+  <!-- Métricas rápidas -->
+  <div class="metrics-row" *ngIf="medico">
+    <div class="metric-chip">
+      <span class="metric-label">Tarifa visita</span>
+      <span class="metric-value">{{formatTarifa(medico.tarifaVisita)}}</span>
+    </div>
+    <div class="metric-chip">
+      <span class="metric-label">Comisión Frend</span>
+      <span class="metric-value">{{medico.pctComision ?? 15}}%</span>
+    </div>
+    <div class="metric-chip">
+      <span class="metric-label">Estado</span>
+      <span class="metric-value estado-activo" *ngIf="medico.estado === 'activo'">Activo</span>
+      <span class="metric-value estado-off" *ngIf="medico.estado !== 'activo'">{{medico.estado}}</span>
+    </div>
+  </div>
+
+  <!-- Bio -->
+  <div class="bio-card" *ngIf="medico?.bio">
+    <p class="bio-text">"{{medico.bio}}"</p>
+  </div>
+
+  <!-- Banners carousel -->
+  <div class="section-header" *ngIf="banners.length > 0 || cargandoBanners">
+    <h3>Promociones para especialistas</h3>
+  </div>
+
+  <div class="banners-scroll" *ngIf="!cargandoBanners && banners.length > 0">
+    <div class="banner-card" *ngFor="let b of banners">
+      <img *ngIf="b.imageUrl" [src]="b.imageUrl" class="banner-img" [alt]="b.descripcion" />
+      <div class="banner-info" *ngIf="b.descripcion">
+        <p>{{b.descripcion}}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skeleton banners -->
+  <div class="banners-scroll" *ngIf="cargandoBanners">
+    <div class="banner-skeleton" *ngFor="let i of [1,2]">
+      <ion-skeleton-text animated style="height:140px;border-radius:14px;"></ion-skeleton-text>
+    </div>
+  </div>
+
+  <!-- Empty banners -->
+  <div class="no-banners" *ngIf="!cargandoBanners && banners.length === 0">
+    <ion-icon name="images-outline"></ion-icon>
+    <p>No hay promociones activas en este momento.</p>
+  </div>
+
+</ion-content>

@@ -1,0 +1,99 @@
+<ion-content class="ion-padding solicitud-bg">
+
+  <!-- Logo y encabezado -->
+  <div class="header-block">
+    <img src="assets/icon/icon.png" alt="FrendPro" class="logo" />
+    <h1 class="titulo">FrendPro</h1>
+    <p class="subtitulo">Plataforma para profesionales veterinarios independientes</p>
+  </div>
+
+  <!-- Estado: formulario enviado con éxito -->
+  <div *ngIf="enviado" class="success-card">
+    <ion-icon name="checkmark-circle" class="success-icon"></ion-icon>
+    <h2>¡Solicitud enviada!</h2>
+    <p>
+      Tu solicitud de vinculación fue recibida. El equipo de Frend la revisará
+      y recibirás un correo con la respuesta y tus credenciales de acceso.
+    </p>
+    <ion-button expand="block" (click)="irLogin()" class="ion-margin-top">
+      Ir a iniciar sesión
+    </ion-button>
+  </div>
+
+  <!-- Formulario -->
+  <div *ngIf="!enviado" class="form-card">
+    <h2 class="form-titulo">Solicitar vinculación</h2>
+    <p class="form-desc">
+      Completa el formulario y el equipo de Frend evaluará tu perfil.
+      Si es aprobado, recibirás tus credenciales por correo.
+    </p>
+
+    <!-- Nombre -->
+    <ion-item lines="none" class="input-item">
+      <ion-label position="stacked">Nombre completo *</ion-label>
+      <ion-input [(ngModel)]="form.nombre" placeholder="Dr. Juan Pérez" clearInput></ion-input>
+    </ion-item>
+
+    <!-- Especialidad -->
+    <ion-item lines="none" class="input-item">
+      <ion-label position="stacked">Especialidad *</ion-label>
+      <ion-select [(ngModel)]="form.especialidad" placeholder="Selecciona tu especialidad"
+                  interface="action-sheet" cancelText="Cancelar">
+        <ion-select-option *ngFor="let e of especialidades" [value]="e">{{e}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Licencia -->
+    <ion-item lines="none" class="input-item">
+      <ion-label position="stacked">Número de licencia / tarjeta profesional</ion-label>
+      <ion-input [(ngModel)]="form.licencia" placeholder="ej: 12345-SP" clearInput></ion-input>
+    </ion-item>
+
+    <!-- Email -->
+    <ion-item lines="none" class="input-item">
+      <ion-label position="stacked">Correo electrónico *</ion-label>
+      <ion-input [(ngModel)]="form.email" type="email" inputmode="email"
+                 placeholder="tu@email.com" clearInput></ion-input>
+    </ion-item>
+
+    <!-- Teléfono -->
+    <ion-item lines="none" class="input-item">
+      <ion-label position="stacked">Teléfono / WhatsApp *</ion-label>
+      <ion-input [(ngModel)]="form.telefono" type="tel" inputmode="tel"
+                 placeholder="+57 300 000 0000" clearInput></ion-input>
+    </ion-item>
+
+    <!-- Ciudad -->
+    <ion-item lines="none" class="input-item">
+      <ion-label position="stacked">Ciudad de operación *</ion-label>
+      <ion-input [(ngModel)]="form.ciudad" placeholder="ej: Bogotá" clearInput></ion-input>
+    </ion-item>
+
+    <!-- Experiencia -->
+    <ion-item lines="none" class="input-item">
+      <ion-label position="stacked">Años de experiencia</ion-label>
+      <ion-input [(ngModel)]="form.experienciaAnios" type="number" inputmode="numeric"
+                 placeholder="ej: 5" min="0" max="60"></ion-input>
+    </ion-item>
+
+    <!-- Mensaje -->
+    <ion-item lines="none" class="input-item">
+      <ion-label position="stacked">Cuéntanos sobre ti / motivación</ion-label>
+      <ion-textarea [(ngModel)]="form.mensaje" rows="4"
+                    placeholder="Describe brevemente tu experiencia, el tipo de servicios que ofreces y por qué quieres unirte a FrendPro…"
+                    auto-grow></ion-textarea>
+    </ion-item>
+
+    <ion-button expand="block" (click)="enviar()"
+                [disabled]="!valido" class="btn-enviar ion-margin-top">
+      <ion-icon name="paper-plane-outline" slot="start"></ion-icon>
+      Enviar solicitud
+    </ion-button>
+
+    <div class="login-link">
+      ¿Ya tienes credenciales?
+      <span (click)="irLogin()">Inicia sesión aquí</span>
+    </div>
+  </div>
+
+</ion-content>

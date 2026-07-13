@@ -1,0 +1,7 @@
+{
+  "name": "frendPro",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

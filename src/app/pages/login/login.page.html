@@ -1,0 +1,48 @@
+<ion-content class="ion-padding login-bg">
+
+  <div class="login-wrap">
+
+    <!-- Logo -->
+    <div class="logo-block">
+      <img src="assets/icon/icon.png" alt="FrendPro" class="logo" />
+      <h1 class="app-name">FrendPro</h1>
+      <p class="tagline">Portal de profesionales</p>
+    </div>
+
+    <!-- Card -->
+    <div class="login-card">
+      <h2>Iniciar sesión</h2>
+      <p class="hint">Usa el correo y la contraseña que recibiste al ser aprobado.</p>
+
+      <ion-item lines="none" class="input-item">
+        <ion-label position="stacked">Correo electrónico</ion-label>
+        <ion-input [(ngModel)]="email" type="email" inputmode="email"
+                   placeholder="tu@email.com" clearInput autocomplete="email"></ion-input>
+      </ion-item>
+
+      <ion-item lines="none" class="input-item ion-margin-top">
+        <ion-label position="stacked">Contraseña</ion-label>
+        <ion-input [(ngModel)]="password" [type]="showPass ? 'text' : 'password'"
+                   placeholder="••••••••••" autocomplete="current-password"></ion-input>
+        <ion-button slot="end" fill="clear" (click)="showPass = !showPass" class="toggle-pass">
+          <ion-icon [name]="showPass ? 'eye-off-outline' : 'eye-outline'" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-button expand="block" (click)="iniciarSesion()"
+                  [disabled]="!email || !password" class="btn-login ion-margin-top">
+        Entrar a FrendPro
+      </ion-button>
+
+      <div class="divider">
+        <span>¿Aún no estás vinculado?</span>
+      </div>
+
+      <ion-button expand="block" fill="outline" (click)="irSolicitud()" class="btn-solicitud">
+        Solicitar vinculación
+      </ion-button>
+    </div>
+
+  </div>
+
+</ion-content>

@@ -1,0 +1,88 @@
+name: Build & Deploy FrendPro
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (production)
+        run: npm run build -- --configuration production --base-href /frendpro/
+
+      - name: Package dist
+        run: tar -czf frendpro-dist.tar.gz -C www .
+
+      - name: Configurar SSH
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts
+
+      - name: Copiar dist al VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          scp -i ~/.ssh/deploy_key frendpro-dist.tar.gz root@$VPS_HOST:/tmp/frendpro-dist.tar.gz
+
+      - name: Deploy en contenedor frendpro
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          ssh -i ~/.ssh/deploy_key root@$VPS_HOST bash << 'ENDSSH'
+            # Extraer build
+            mkdir -p /tmp/frendpro_build
+            tar -xzf /tmp/frendpro-dist.tar.gz -C /tmp/frendpro_build
+
+            # Crear .htaccess para SPA routing
+            cat > /tmp/frendpro_build/.htaccess << 'HTACCESS'
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /frendpro/
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /frendpro/index.html [L]
+</IfModule>
+HTACCESS
+
+            # Copiar al contenedor
+            docker exec frendpro sh -c "rm -rf /usr/local/apache2/htdocs/*"
+            docker cp /tmp/frendpro_build/. frendpro:/usr/local/apache2/htdocs/
+
+            # Habilitar mod_rewrite y AllowOverride
+            docker exec frendpro sed -i \
+              's/#LoadModule rewrite_module/LoadModule rewrite_module/' \
+              /usr/local/apache2/conf/httpd.conf
+            docker exec frendpro sed -i \
+              's/AllowOverride None/AllowOverride All/g' \
+              /usr/local/apache2/conf/httpd.conf
+
+            # Reload Apache
+            docker exec frendpro httpd -k graceful
+
+            # Limpieza
+            rm -rf /tmp/frendpro_build /tmp/frendpro-dist.tar.gz
+
+            echo "✅ FrendPro desplegado: $(date)"
+            docker ps | grep frendpro
+          ENDSSH
