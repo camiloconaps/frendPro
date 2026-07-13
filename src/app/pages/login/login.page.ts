@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+import { PushService } from '../../services/push.service';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +21,7 @@ export class LoginPage implements OnInit {
   constructor(
     private api: ApiService,
     private auth: AuthService,
+    private push: PushService,
     private router: Router,
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
@@ -49,6 +51,7 @@ export class LoginPage implements OnInit {
         await loading.dismiss();
         if (r.message === 'OK' && r.dtObject) {
           this.auth.saveMedico(r.dtObject);
+          this.push.inicializar();   // registra token FCM en background
           this.router.navigate(['/tabs/inicio'], { replaceUrl: true });
         } else {
           this.showAlert('Acceso denegado', r.message);

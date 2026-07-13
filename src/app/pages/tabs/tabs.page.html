@@ -9,11 +9,13 @@
     <ion-tab-button tab="agenda">
       <ion-icon name="calendar-outline"></ion-icon>
       <ion-label>Agenda</ion-label>
+      <ion-badge *ngIf="pendientes > 0" color="warning">{{pendientes}}</ion-badge>
     </ion-tab-button>
 
     <ion-tab-button tab="notificaciones">
       <ion-icon name="notifications-outline"></ion-icon>
-      <ion-label>Notificaciones</ion-label>
+      <ion-label>Actividad</ion-label>
+      <ion-badge *ngIf="pendientes > 0" color="danger">{{pendientes}}</ion-badge>
     </ion-tab-button>
 
   </ion-tab-bar>

@@ -1,0 +1,129 @@
+.notif-content { --background: #f0f4f8; }
+
+ion-toolbar[color="primary"] {
+  --background: #0f3460;
+  --color: #fff;
+}
+
+/* CTA pendientes */
+.cta-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0f3460;
+  color: #fff;
+  margin: 12px 16px 0;
+  border-radius: 16px;
+  padding: 14px 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(15,52,96,.3);
+
+  .cta-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cta-badge {
+    background: #f59e0b;
+    color: #fff;
+    font-weight: 800;
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .cta-title {
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 0 2px;
+  }
+
+  .cta-sub {
+    font-size: 12px;
+    opacity: .75;
+    margin: 0;
+  }
+
+  .cta-arrow {
+    font-size: 20px;
+    opacity: .6;
+  }
+}
+
+/* Feed */
+.feed {
+  padding: 12px 16px 32px;
+}
+
+.feed-item {
+  display: flex;
+  gap: 12px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.05);
+
+  .feed-icon-wrap {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon { font-size: 20px; }
+  }
+
+  .feed-body {
+    flex: 1;
+    min-width: 0;
+
+    .feed-titulo {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0 0 2px;
+    }
+
+    .feed-desc {
+      font-size: 13px;
+      color: #475569;
+      margin: 0 0 2px;
+    }
+
+    .feed-fecha {
+      font-size: 11px;
+      color: #94a3b8;
+      margin: 0;
+    }
+
+    .feed-motivo {
+      font-size: 12px;
+      color: #b91c1c;
+      font-style: italic;
+      margin-top: 6px;
+      background: #fef2f2;
+      border-radius: 6px;
+      padding: 6px 8px;
+    }
+  }
+}
+
+/* Empty */
+.empty-state {
+  text-align: center;
+  padding: 60px 16px;
+  color: #94a3b8;
+
+  ion-icon { font-size: 52px; display: block; margin-bottom: 12px; }
+  p { font-size: 14px; margin: 0; }
+}

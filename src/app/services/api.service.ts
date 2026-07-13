@@ -57,6 +57,21 @@ export class ApiService {
     return this.http.get<ApiResp<any[]>>(`${PATH}/Fc/banner?tipoApp=banner_medico`, this.h(token));
   }
 
+  // ── Visitas del especialista (FrendPro) ───────────────────────────────────
+
+  getMisVisitas(token: string, idMedico: number, estado?: string): Observable<ApiResp<any[]>> {
+    const q = estado ? `?estado=${estado}` : '';
+    return this.http.get<ApiResp<any[]>>(`${PATH}/visita-medico/medico/${idMedico}${q}`, this.h(token));
+  }
+
+  responderVisita(token: string, id: number, decision: string, motivoRechazo?: string, notas?: string): Observable<ApiResp<any>> {
+    return this.http.post<ApiResp<any>>(`${PATH}/visita-medico/${id}/responder`, { decision, motivoRechazo, notas }, this.h(token));
+  }
+
+  saveTokenMedico(token: string, idMedico: number, fcmToken: string): Observable<ApiResp<any>> {
+    return this.http.post<ApiResp<any>>(`${PATH}/visita-medico/token`, { idMedico: idMedico.toString(), token: fcmToken }, this.h(token));
+  }
+
   // ── Solicitud pública de ingreso ──────────────────────────────────────────
 
   enviarSolicitud(token: string, body: any): Observable<ApiResp<any>> {

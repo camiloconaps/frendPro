@@ -1,0 +1,62 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-title>Actividad</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cargar()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="notif-content">
+
+  <ion-refresher slot="fixed" (ionRefresh)="cargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Tarjeta CTA si hay pendientes -->
+  <div class="cta-card" *ngIf="pendientes().length > 0" (click)="irAgenda()">
+    <div class="cta-left">
+      <div class="cta-badge">{{pendientes().length}}</div>
+      <div>
+        <p class="cta-title">Solicitudes pendientes</p>
+        <p class="cta-sub">Toca para responder a la brevedad</p>
+      </div>
+    </div>
+    <ion-icon name="chevron-forward-outline" class="cta-arrow"></ion-icon>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="cargando" class="ion-padding">
+    <ion-skeleton-text animated style="height:60px;border-radius:12px;margin-bottom:8px;" *ngFor="let i of [1,2,3,4]"></ion-skeleton-text>
+  </div>
+
+  <!-- Feed de actividad -->
+  <div class="feed" *ngIf="!cargando">
+    <div class="feed-item" *ngFor="let v of todasLasVisitas">
+      <div class="feed-icon-wrap">
+        <ion-icon [name]="icono(v.estadoMedico)" [style.color]="colorIcono(v.estadoMedico)"></ion-icon>
+      </div>
+      <div class="feed-body">
+        <p class="feed-titulo">{{etiqueta(v.estadoMedico)}}</p>
+        <p class="feed-desc">
+          {{v.fechaVisita}}{{v.horaInicio ? ' · ' + v.horaInicio : ''}} · {{v.especialidad}}
+        </p>
+        <p class="feed-fecha" *ngIf="v.fechaGestion || v.fechaCreacion">
+          {{v.fechaGestion ?? v.fechaCreacion}}
+        </p>
+        <div class="feed-motivo" *ngIf="v.motivoRechazo">
+          "{{v.motivoRechazo}}"
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="todasLasVisitas.length === 0">
+      <ion-icon name="notifications-off-outline"></ion-icon>
+      <p>No hay actividad registrada aún.</p>
+      <p style="font-size:12px;color:#94a3b8;margin-top:4px;">Cuando la veterinaria solicite tu presencia aparecerá aquí.</p>
+    </div>
+  </div>
+
+</ion-content>
