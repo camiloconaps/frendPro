@@ -149,4 +149,8 @@ export class AgendaPage implements OnInit {
     if (!t) return '—';
     return '$' + t.toLocaleString('es-CO');
   }
+
+  esNumero(val: any): boolean {
+    return val !== null && val !== '' && !isNaN(Number(val));
+  }
 }

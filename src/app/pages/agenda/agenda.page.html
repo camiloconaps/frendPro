@@ -56,10 +56,15 @@
         <span class="fecha-tag">{{v.fechaVisita}}</span>
       </div>
 
-      <!-- Horario -->
-      <div class="horario-row">
-        <ion-icon name="time-outline" class="row-icon"></ion-icon>
-        <span>{{v.horaInicio}}{{v.horaFin ? ' – ' + v.horaFin : ''}}</span>
+      <!-- ── Horario PROMINENTE ── -->
+      <div class="hora-block">
+        <ion-icon name="time-outline" class="hora-icon"></ion-icon>
+        <div class="hora-times">
+          <span class="hora-value">{{v.horaInicio || '—'}}</span>
+          <span class="hora-sep" *ngIf="v.horaFin"> — {{v.horaFin}}</span>
+          <span class="hora-h">h</span>
+        </div>
+        <span class="hora-sin-fin" *ngIf="!v.horaFin">(hora fin no definida)</span>
       </div>
 
       <!-- Especialidad -->
@@ -68,10 +73,14 @@
         <span>{{v.especialidad}}</span>
       </div>
 
-      <!-- Veterinaria y sede -->
-      <div class="info-row" *ngIf="v.nombreVet">
+      <!-- Veterinaria y sede — siempre visible -->
+      <div class="info-row">
         <ion-icon name="business-outline" class="row-icon"></ion-icon>
-        <span>{{v.nombreVet}}<span class="sede-tag" *ngIf="v.nombreSede"> · {{v.nombreSede}}</span></span>
+        <span *ngIf="v.nombreVet?.trim()">
+          <strong>{{v.nombreVet}}</strong>
+          <span class="sede-tag" *ngIf="v.nombreSede?.trim()"> · {{v.nombreSede}}</span>
+        </span>
+        <span *ngIf="!v.nombreVet?.trim()" class="text-muted">Veterinaria · sede no especificada</span>
       </div>
 
       <!-- Tarifa -->
@@ -84,6 +93,10 @@
 
       <!-- ── Paciente ─────────────────────────────────── -->
       <div class="paciente-section" *ngIf="v.nombrePaciente">
+        <div class="paciente-label-row">
+          <ion-icon name="paw-outline" style="font-size:13px;color:#94a3b8"></ion-icon>
+          <span class="paciente-label-title">Paciente</span>
+        </div>
         <div class="paciente-header">
           <div class="paciente-avatar" *ngIf="v.avatarUrlPaciente">
             <img [src]="v.avatarUrlPaciente" alt="avatar" />
@@ -93,24 +106,25 @@
           </div>
           <div class="paciente-bio">
             <span class="paciente-nombre">{{v.nombrePaciente}}</span>
-            <span class="paciente-meta">
-              {{v.tipoPaciente}}{{v.razaPaciente ? ' · ' + v.razaPaciente : ''}}
-              {{v.edadPaciente != null ? ' · ' + v.edadPaciente + ' años' : ''}}
-              {{v.pesoPaciente != null ? ' · ' + v.pesoPaciente + ' kg' : ''}}
-            </span>
+            <div class="paciente-chips">
+              <span class="p-chip" *ngIf="v.tipoPaciente && !esNumero(v.tipoPaciente)">{{v.tipoPaciente}}</span>
+              <span class="p-chip" *ngIf="v.razaPaciente && v.razaPaciente.length > 2 && !esNumero(v.razaPaciente)">{{v.razaPaciente}}</span>
+              <span class="p-chip p-chip-age" *ngIf="v.edadPaciente > 0">{{v.edadPaciente}} años</span>
+              <span class="p-chip" *ngIf="v.pesoPaciente > 0">{{v.pesoPaciente}} kg</span>
+            </div>
           </div>
         </div>
         <!-- Última visita de referencia -->
         <div class="paciente-ref" *ngIf="v.ultimoServicio">
           <ion-icon name="time-outline" style="font-size:12px;color:#94a3b8;flex-shrink:0"></ion-icon>
-          <span>Última cita: <strong>{{v.ultimoServicio}}</strong>
+          <span>Últ. cita: <strong>{{v.ultimoServicio}}</strong>
             <span *ngIf="v.ultimaFechaVisita"> — {{v.ultimaFechaVisita}}</span>
           </span>
         </div>
         <!-- Observación del usuario -->
         <div class="paciente-obs" *ngIf="v.obsUsuario">
           <ion-icon name="chatbubble-ellipses-outline" style="font-size:12px;color:#94a3b8;flex-shrink:0"></ion-icon>
-          <span>"{{v.obsUsuario}}"</span>
+          <span class="obs-text">"{{v.obsUsuario}}"</span>
         </div>
       </div>
 
