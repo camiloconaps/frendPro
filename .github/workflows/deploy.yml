@@ -25,6 +25,10 @@ jobs:
       - name: Build (production)
         run: npm run build -- --configuration production --base-href /frendpro/
 
+      - name: Create SPA .htaccess
+        run: |
+          printf '<IfModule mod_rewrite.c>\n  RewriteEngine On\n  RewriteBase /\n  RewriteRule ^index\\.html$ - [L]\n  RewriteCond %%{REQUEST_FILENAME} !-f\n  RewriteCond %%{REQUEST_FILENAME} !-d\n  RewriteRule . /index.html [L]\n</IfModule>\n' > www/.htaccess
+
       - name: Package dist
         run: tar -czf frendpro-dist.tar.gz -C www .
 
@@ -48,42 +52,14 @@ jobs:
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
         run: |
-          ssh -i ~/.ssh/deploy_key root@$VPS_HOST bash << 'ENDSSH'
-            # Extraer build
+          ssh -i ~/.ssh/deploy_key root@$VPS_HOST '
             mkdir -p /tmp/frendpro_build
             tar -xzf /tmp/frendpro-dist.tar.gz -C /tmp/frendpro_build
-
-            # Crear .htaccess para SPA routing
-            # nginx hace proxy_pass con strip de /frendpro/, el contenedor ve paths desde /
-            cat > /tmp/frendpro_build/.htaccess << 'HTACCESS'
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
-</IfModule>
-HTACCESS
-
-            # Copiar al contenedor
             docker exec frendpro sh -c "rm -rf /usr/local/apache2/htdocs/*"
             docker cp /tmp/frendpro_build/. frendpro:/usr/local/apache2/htdocs/
-
-            # Habilitar mod_rewrite y AllowOverride
-            docker exec frendpro sed -i \
-              's/#LoadModule rewrite_module/LoadModule rewrite_module/' \
-              /usr/local/apache2/conf/httpd.conf
-            docker exec frendpro sed -i \
-              's/AllowOverride None/AllowOverride All/g' \
-              /usr/local/apache2/conf/httpd.conf
-
-            # Reload Apache
+            docker exec frendpro sed -i "s/#LoadModule rewrite_module/LoadModule rewrite_module/" /usr/local/apache2/conf/httpd.conf
+            docker exec frendpro sed -i "s/AllowOverride None/AllowOverride All/g" /usr/local/apache2/conf/httpd.conf
             docker exec frendpro httpd -k graceful
-
-            # Limpieza
             rm -rf /tmp/frendpro_build /tmp/frendpro-dist.tar.gz
-
-            echo "✅ FrendPro desplegado: $(date)"
-            docker ps | grep frendpro
-          ENDSSH
+            echo "FrendPro desplegado OK"
+          '
