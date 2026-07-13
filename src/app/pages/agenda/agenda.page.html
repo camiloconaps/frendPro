@@ -82,6 +82,38 @@
         </span>
       </div>
 
+      <!-- ── Paciente ─────────────────────────────────── -->
+      <div class="paciente-section" *ngIf="v.nombrePaciente">
+        <div class="paciente-header">
+          <div class="paciente-avatar" *ngIf="v.avatarUrlPaciente">
+            <img [src]="v.avatarUrlPaciente" alt="avatar" />
+          </div>
+          <div class="paciente-avatar paciente-avatar-placeholder" *ngIf="!v.avatarUrlPaciente">
+            <ion-icon name="paw-outline"></ion-icon>
+          </div>
+          <div class="paciente-bio">
+            <span class="paciente-nombre">{{v.nombrePaciente}}</span>
+            <span class="paciente-meta">
+              {{v.tipoPaciente}}{{v.razaPaciente ? ' · ' + v.razaPaciente : ''}}
+              {{v.edadPaciente != null ? ' · ' + v.edadPaciente + ' años' : ''}}
+              {{v.pesoPaciente != null ? ' · ' + v.pesoPaciente + ' kg' : ''}}
+            </span>
+          </div>
+        </div>
+        <!-- Última visita de referencia -->
+        <div class="paciente-ref" *ngIf="v.ultimoServicio">
+          <ion-icon name="time-outline" style="font-size:12px;color:#94a3b8;flex-shrink:0"></ion-icon>
+          <span>Última cita: <strong>{{v.ultimoServicio}}</strong>
+            <span *ngIf="v.ultimaFechaVisita"> — {{v.ultimaFechaVisita}}</span>
+          </span>
+        </div>
+        <!-- Observación del usuario -->
+        <div class="paciente-obs" *ngIf="v.obsUsuario">
+          <ion-icon name="chatbubble-ellipses-outline" style="font-size:12px;color:#94a3b8;flex-shrink:0"></ion-icon>
+          <span>"{{v.obsUsuario}}"</span>
+        </div>
+      </div>
+
       <!-- Notas del médico (si fue aceptada con notas) -->
       <div class="info-row" *ngIf="v.notasMedico">
         <ion-icon name="chatbubble-outline" class="row-icon"></ion-icon>
