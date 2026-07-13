@@ -23,7 +23,7 @@ jobs:
         run: npm ci
 
       - name: Build (production)
-        run: npm run build -- --configuration production --base-href /frendpro/
+        run: npm run build -- --configuration production --base-href /frendPro/
 
       - name: Create SPA .htaccess
         run: |
