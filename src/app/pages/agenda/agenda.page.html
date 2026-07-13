@@ -68,6 +68,12 @@
         <span>{{v.especialidad}}</span>
       </div>
 
+      <!-- Veterinaria y sede -->
+      <div class="info-row" *ngIf="v.nombreVet">
+        <ion-icon name="business-outline" class="row-icon"></ion-icon>
+        <span>{{v.nombreVet}}<span class="sede-tag" *ngIf="v.nombreSede"> · {{v.nombreSede}}</span></span>
+      </div>
+
       <!-- Tarifa -->
       <div class="info-row" *ngIf="v.tarifaAplicada">
         <ion-icon name="cash-outline" class="row-icon"></ion-icon>
