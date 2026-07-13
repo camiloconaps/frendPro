@@ -25,7 +25,7 @@ export class ApiService {
   }
 
   getClientToken(): Observable<any> {
-    const url = `${PATH}/oauth/client_credentials/accestoken?grant_type=client_credentials&client_id=client_id&client_secret=client_secret`;
+    const url = `${PATH}/oauth/client_credentials/accestoken?grant_type=client_credentials&client_id=frend-ios-b8c3d2e91f05&client_secret=yjikL2Dnmhl1GgVIjr9q0OMiOGkVDHXQ`;
     return this.http.post<any>(url, {}, {
       headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
     });

@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { ApiService } from './services/api.service';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +9,9 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class AppComponent {
-  constructor() {}
+  constructor(private api: ApiService, private auth: AuthService) {
+    this.api.getClientToken().subscribe({
+      next: r => this.auth.saveClientToken(r.access_token),
+    });
+  }
 }
