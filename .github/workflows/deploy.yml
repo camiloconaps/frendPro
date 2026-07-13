@@ -54,14 +54,15 @@ jobs:
             tar -xzf /tmp/frendpro-dist.tar.gz -C /tmp/frendpro_build
 
             # Crear .htaccess para SPA routing
+            # nginx hace proxy_pass con strip de /frendpro/, el contenedor ve paths desde /
             cat > /tmp/frendpro_build/.htaccess << 'HTACCESS'
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteBase /frendpro/
+  RewriteBase /
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /frendpro/index.html [L]
+  RewriteRule . /index.html [L]
 </IfModule>
 HTACCESS
 
