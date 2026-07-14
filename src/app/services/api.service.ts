@@ -68,6 +68,14 @@ export class ApiService {
     return this.http.post<ApiResp<any>>(`${PATH}/visita-medico/${id}/responder`, { decision, motivoRechazo, notas }, this.h(token));
   }
 
+  realizarVisita(token: string, id: number, notas: { antecedentes?: string; diagnostico?: string; formula?: string; obs?: string }): Observable<ApiResp<any>> {
+    return this.http.post<ApiResp<any>>(`${PATH}/visita-medico/${id}/realizar`, notas, this.h(token));
+  }
+
+  cancelarVisitaVet(token: string, id: number, motivo: string): Observable<ApiResp<any>> {
+    return this.http.post<ApiResp<any>>(`${PATH}/visita-medico/${id}/cancelar-vet`, { motivo }, this.h(token));
+  }
+
   saveTokenMedico(token: string, idMedico: number, fcmToken: string): Observable<ApiResp<any>> {
     return this.http.post<ApiResp<any>>(`${PATH}/visita-medico/token`, { idMedico: idMedico.toString(), token: fcmToken }, this.h(token));
   }

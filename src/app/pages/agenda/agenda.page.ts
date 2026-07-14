@@ -27,8 +27,19 @@ export class AgendaPage implements OnInit {
   filtros = [
     { label: 'Pendientes',  value: 'pendiente_medico', color: 'warning' },
     { label: 'Aceptadas',   value: 'aceptado',          color: 'success' },
+    { label: 'Realizadas',  value: 'realizada',          color: 'primary' },
     { label: 'Rechazadas',  value: 'rechazado',          color: 'danger'  },
+    { label: 'Canceladas',  value: 'cancelada_vet,cancelada_cliente', color: 'medium' },
   ];
+
+  /* modal realizar visita */
+  dlgRealizar      = false;
+  visitaEnGestion: any = null;
+  antecedentes     = '';
+  diagnostico      = '';
+  formula          = '';
+  obsGestion       = '';
+  procesandoGestion = false;
 
   constructor(
     private api: ApiService,
@@ -52,14 +63,36 @@ export class AgendaPage implements OnInit {
     if (!this.medico?.id) return;
     if (!event) this.cargando = true;
 
-    this.api.getMisVisitas(this.clientToken, this.medico.id, this.filtro).subscribe({
-      next: r => {
-        this.visitas = r.dtObject ?? [];
-        this.cargando = false;
-        event?.target?.complete();
-      },
-      error: () => { this.cargando = false; event?.target?.complete(); },
-    });
+    // "cancelada_vet,cancelada_cliente" se manda como un solo estado (el backend maneja uno a la vez),
+    // para canceladas cargamos ambas en dos llamadas y concatenamos
+    if (this.filtro.includes(',')) {
+      const [e1, e2] = this.filtro.split(',');
+      let r1: any[] = [], r2: any[] = [], done = 0;
+      const finish = () => {
+        if (++done === 2) {
+          this.visitas = [...r1, ...r2];
+          this.cargando = false;
+          event?.target?.complete();
+        }
+      };
+      this.api.getMisVisitas(this.clientToken, this.medico.id, e1).subscribe({
+        next: r => { r1 = r.dtObject ?? []; finish(); },
+        error: () => finish(),
+      });
+      this.api.getMisVisitas(this.clientToken, this.medico.id, e2).subscribe({
+        next: r => { r2 = r.dtObject ?? []; finish(); },
+        error: () => finish(),
+      });
+    } else {
+      this.api.getMisVisitas(this.clientToken, this.medico.id, this.filtro).subscribe({
+        next: r => {
+          this.visitas = r.dtObject ?? [];
+          this.cargando = false;
+          event?.target?.complete();
+        },
+        error: () => { this.cargando = false; event?.target?.complete(); },
+      });
+    }
   }
 
   cambiarFiltro(v: string): void {
@@ -133,15 +166,70 @@ export class AgendaPage implements OnInit {
     });
   }
 
+  // ── Realizar visita ────────────────────────────────────────────────────────
+
+  abrirRealizar(visita: any): void {
+    this.visitaEnGestion  = visita;
+    this.antecedentes     = '';
+    this.diagnostico      = '';
+    this.formula          = '';
+    this.obsGestion       = '';
+    this.dlgRealizar      = true;
+  }
+
+  async confirmarRealizar(): Promise<void> {
+    this.dlgRealizar = false;
+    const loading = await this.loadingCtrl.create({ message: 'Guardando gestión…' });
+    await loading.present();
+
+    this.api.realizarVisita(this.clientToken, this.visitaEnGestion.id, {
+      antecedentes: this.antecedentes || undefined,
+      diagnostico:  this.diagnostico  || undefined,
+      formula:      this.formula       || undefined,
+      obs:          this.obsGestion    || undefined,
+    }).subscribe({
+      next: async () => {
+        await loading.dismiss();
+        this.badge.refrescar();
+        this.cargar();
+        const t = await this.alertCtrl.create({
+          header: '¡Visita registrada!',
+          message: 'La gestión fue guardada. La visita ya puede incluirse en la liquidación mensual.',
+          buttons: ['OK'],
+        });
+        await t.present();
+      },
+      error: async () => {
+        await loading.dismiss();
+        const e = await this.alertCtrl.create({ header: 'Error', message: 'No se pudo registrar la visita. Intenta de nuevo.', buttons: ['OK'] });
+        await e.present();
+      },
+    });
+  }
+
   // ── Helpers ────────────────────────────────────────────────────────────────
 
   etiquetaEstado(e: string): string {
-    const m: any = { pendiente_medico: 'Pendiente', aceptado: 'Aceptado', rechazado: 'Rechazado' };
+    const m: any = {
+      pendiente_medico: 'Pendiente',
+      aceptado:         'Aceptada',
+      realizada:        'Realizada',
+      rechazado:        'Rechazada',
+      cancelada_vet:    'Cancelada (vet)',
+      cancelada_cliente:'Cancelada (cliente)',
+    };
     return m[e] ?? e;
   }
 
   colorEstado(e: string): string {
-    const m: any = { pendiente_medico: 'warning', aceptado: 'success', rechazado: 'danger' };
+    const m: any = {
+      pendiente_medico: 'warning',
+      aceptado:         'success',
+      realizada:        'primary',
+      rechazado:        'danger',
+      cancelada_vet:    'medium',
+      cancelada_cliente:'medium',
+    };
     return m[e] ?? 'medium';
   }
 
